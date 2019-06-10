@@ -1,0 +1,86 @@
+	.globl calc
+calc:
+	// create 9999 for checking
+	MOV X8,#9999
+	// create -9999 for checking
+	SUB X10,XZR,X8
+	// create 10000 for error returning
+	EOR X9,X9,X9
+	ADD X9,X8,#1
+
+
+	MOV X3,X0
+	EOR X0,X0,X0
+	CMP	X2,#1
+	B.EQ FACT_
+	CMP X2,#2
+	B.EQ ADD_
+	CMP X2,#3
+	B.EQ SUB_
+	CMP X2,#4
+	B.EQ MULT_
+	CMP X2,#5
+	B.EQ EXP_
+	// some stupid error happens down here
+	MOV X0,X9
+	BR X30
+
+// --FACT METHOD--
+FACT_:
+	SUBS XZR,X3,10
+	B.GE ERR
+
+	SUB SP,SP,#16
+	STUR X30,[SP,#8]
+	STUR X3,[SP,#0]
+	CMP X3,#1
+	B.GE L1
+	EOR X0,X0,X0
+	ADD X0,X0,#1
+	ADD SP,SP,#16
+	BR X30
+L1:
+	SUB X3,X3,#1
+	BL FACT_
+	LDUR X3,[SP,#0]
+	LDUR X30,[SP,#8]
+	ADD SP,SP,#16
+	MUL X0,X3,X0
+	BR X30
+// --FACT METHOD--
+
+ADD_:
+	ADD X0,X1,X3
+	CMP X0,X8
+	B.GE ERRN
+	CMP X0,X10
+	B.LT ERRN
+	BR X30
+SUB_:
+	SUB X0,X3,X1
+	CMP X0,X8
+	B.GE ERRN
+	CMP X0,X10
+	B.LT ERRN
+	BR X30
+MULT_:
+	MUL X0,X3,X1
+	CMP X0,X8
+	B.GE ERRN
+	CMP X0,X10
+	B.LT ERRN
+	BR X30
+EXP_:
+	CMP X3,#13
+	EOR X11,X11,X11
+	ADD X11,X11,#2
+	B.GE ERRN
+	LSL X0,X11,X3
+	BR X30
+ERR:
+	ADD X0,X0,#-1
+	BR X30
+ERRN:
+	ADD X0,XZR,X9
+	BR X30
+

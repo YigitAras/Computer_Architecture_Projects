@@ -1,0 +1,27 @@
+	.globl fib
+fib:
+	MOV X1,X0
+	EOR X0,X0,X0
+	B L1
+
+L1:
+	SUB SP,SP,#16
+	STUR X30,[SP,#8]
+	STUR X1,[SP,#0]
+	CMP X1,#2
+	B.GT R1
+	ADD X0,X0,#1
+	ADD SP,SP,#16
+	BR X30
+
+R1:
+	SUB X1,X1,#1
+	BL L1
+	LDUR X1,[SP,#0]
+	LDUR X30,[SP,#8]
+	SUB X1,X1,#2
+	BL L1
+	LDUR X1,[SP,#0]
+	LDUR X30,[SP,#8]
+	ADD SP,SP,#16
+	BR X30
